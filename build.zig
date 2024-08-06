@@ -57,19 +57,19 @@ fn compileRocksdb(b: *std.Build) *std.Build.Step {
     if (createStepIfFileNotExists(b, b.path("deps/rocksdb/librocksdb.a"), "make static_lib", b.path("deps/rocksdb"))) |step| {
         compile_rocksdb_step.dependOn(step);
     }
-    if (createStepIfFileNotExists(b, b.path("deps/rocksdb/libzstd.a"), "make libzstd.a", b.path("deps/rocksdb"))) |step| {
+    if (createStepIfFileNotExists(b, b.path("deps/rocksdb/libzstd.a"), "make libzstd.a -j$(nproc)", b.path("deps/rocksdb"))) |step| {
         compile_rocksdb_step.dependOn(step);
     }
-    if (createStepIfFileNotExists(b, b.path("deps/rocksdb/liblz4.a"), "make liblz4.a", b.path("deps/rocksdb"))) |step| {
+    if (createStepIfFileNotExists(b, b.path("deps/rocksdb/liblz4.a"), "make liblz4.a -j$(nproc)", b.path("deps/rocksdb"))) |step| {
         compile_rocksdb_step.dependOn(step);
     }
-    if (createStepIfFileNotExists(b, b.path("deps/rocksdb/libbz2.a"), "make libbz2.a", b.path("deps/rocksdb"))) |step| {
+    if (createStepIfFileNotExists(b, b.path("deps/rocksdb/libbz2.a"), "make libbz2.a -j$(nproc)", b.path("deps/rocksdb"))) |step| {
         compile_rocksdb_step.dependOn(step);
     }
-    if (createStepIfFileNotExists(b, b.path("deps/rocksdb/libsnappy.a"), "make libsnappy.a", b.path("deps/rocksdb"))) |step| {
+    if (createStepIfFileNotExists(b, b.path("deps/rocksdb/libsnappy.a"), "make libsnappy.a -j$(nproc)", b.path("deps/rocksdb"))) |step| {
         compile_rocksdb_step.dependOn(step);
     }
-    if (createStepIfFileNotExists(b, b.path("deps/rocksdb/libz.a"), "make libz.a", b.path("deps/rocksdb"))) |step| {
+    if (createStepIfFileNotExists(b, b.path("deps/rocksdb/libz.a"), "make libz.a -j$(nproc)", b.path("deps/rocksdb"))) |step| {
         compile_rocksdb_step.dependOn(step);
     }
     return compile_rocksdb_step;
@@ -78,7 +78,6 @@ fn compileRocksdb(b: *std.Build) *std.Build.Step {
 fn createStepIfFileNotExists(b: *std.Build, targe_path: std.Build.LazyPath, shell_cmd: []const u8, path: ?std.Build.LazyPath) ?*std.Build.Step {
     _ = std.fs.cwd().access(targe_path.getPath(b), .{}) catch |err| {
         if (err == error.FileNotFound) {
-            // File doesn't exist, create a step to run the shell command
             const run_step = b.addSystemCommand(&.{
                 "sh", "-c", shell_cmd,
             });
